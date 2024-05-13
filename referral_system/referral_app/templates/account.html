@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main>
+    <h1>Referral System</h1>
+    <form action="/account_access/" method="post">
+        {% csrf_token %}
+        <div class="1">
+            User account:
+            {{ data_user.phone_number }}</div>
+        <div class="2">
+            The user's invite code:
+            {{ data_user.invite_code }}</div>
+
+            {% if data_user.used_code %}
+
+            Your activated invite code:
+            {{ data_user.used_code }}
+        <div class="3">
+            Your code has been activated:
+            <ul>{% for user in data_user.dependent_user %}
+                <li>{{ user }}</li>
+                {% endfor %}
+            </ul></div>
+                {% else %}
+                    <input id="invite_code" type="text" name="invite_code">
+                    <input type="submit" value="apply">
+    </form>
+    {% endif %}
+</main>
+{% endblock %}
