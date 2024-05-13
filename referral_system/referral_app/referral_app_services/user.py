@@ -3,8 +3,8 @@ from typing import Tuple
 
 import jwt
 
-from exceptions import ErrorType, AppError
-from referral_app.models import UserProfile
+from referral_system.exceptions import ErrorType, AppError
+from referral_system.referral_app.models import UserProfile
 
 import random
 
