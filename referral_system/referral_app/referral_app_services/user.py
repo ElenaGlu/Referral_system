@@ -2,11 +2,10 @@ import datetime
 from typing import Tuple
 
 import jwt
-
-from referral_system.exceptions import ErrorType, AppError
-from referral_system.referral_app.models import UserProfile
-
 import random
+
+from exceptions import AppError, ErrorType
+from referral_app.models import UserProfile
 
 
 class UserAccount:
