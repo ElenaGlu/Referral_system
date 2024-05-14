@@ -65,12 +65,12 @@ WSGI_APPLICATION = 'referral_system.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'referral_system',
         'USER': 'elena',
         'PASSWORD': '1',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '3306',
     }
 }
 
