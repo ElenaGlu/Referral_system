@@ -4,6 +4,7 @@ from typing import Tuple
 import jwt
 import random
 
+import config
 from exceptions import AppError, ErrorType
 from referral_app.models import UserProfile
 
@@ -30,7 +31,7 @@ class UserAccount:
                 invite_code=invite_code,
                 access_token=access_token
             )
-            # self.send_notification([phone_number], f'{authorization_code}')
+            # self.send_notification([phone_number], f'{authentication_code}')
         return authentication_code, access_token
 
     @staticmethod
@@ -60,9 +61,19 @@ class UserAccount:
         :param access_token: the string contains a JWT
         :raises AppError: if invalid invite code entered
         """
-        user_invite = UserProfile.objects.filter(invite_code=invite_code).first()
-        if user_invite:
-            UserProfile.objects.filter(access_token=access_token).update(used_code=invite_code)
+        user_guest = UserProfile.objects.filter(invite_code=invite_code).first()
+        if user_guest:
+            current_user = UserProfile.objects.filter(access_token=access_token).first()
+            if user_guest != current_user:
+                current_user.used_code = invite_code
+                current_user.save()
+            else:
+                raise AppError(
+                    {
+                        'error_type': ErrorType.INVITE_ERROR,
+                        'description': 'you have entered your code'
+                    }
+                )
         else:
             raise AppError(
                 {
@@ -77,6 +88,7 @@ class UserAccount:
         Get user information.
         :param access_token: the string contains a JWT
         :raises AppError: if invalid invite code entered
+        :return: dict object containing key - phone_number, invite_code, used_code
         """
         user = UserProfile.objects.filter(access_token=access_token).first()
         if user:
@@ -97,21 +109,21 @@ class UserAccount:
             )
 
     @staticmethod
-    def create_jwt():
+    def create_jwt() -> str:
         """
         Creating JWT.
-        :return:
+        :return: str containing jwt
         """
         payload = {"sub": "admin",
-                   "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=2)
+                   "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
                    }
-        return jwt.encode(payload, '123', algorithm="HS256")
+        return jwt.encode(payload, config.DJANGO_SECRET_KEY, algorithm="HS256")
 
     @staticmethod
     def generating_authentication_code() -> str:
         """
         Generating an authentication token.
-        :return:
+        :return: str containing four-digit code
         """
         numbers = random.sample(range(10), 4)
         return ''.join(map(str, numbers))
@@ -120,7 +132,7 @@ class UserAccount:
     def generating_invite_code() -> str:
         """
         Generating an invitation token.
-        :return:
+        :return: str containing six-digit code
         """
         return ''.join([random.choice(list('123456789!@#$%*+')) for _ in range(6)])
 

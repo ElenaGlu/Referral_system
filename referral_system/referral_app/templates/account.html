@@ -2,13 +2,12 @@
 {% block content %}
 
 <main>
-    <h1>Referral System</h1>
     <form action="/account_access/" method="post">
         {% csrf_token %}
-        <div class="1">
+        <div class="user">
             User account:
             {{ data_user.phone_number }}</div>
-        <div class="2">
+        <div class="invite">
             The user's invite code:
             {{ data_user.invite_code }}</div>
 
@@ -16,7 +15,7 @@
 
             Your activated invite code:
             {{ data_user.used_code }}
-        <div class="3">
+        <div class="activate">
             Your code has been activated:
             <ul>{% for user in data_user.dependent_user %}
                 <li>{{ user }}</li>

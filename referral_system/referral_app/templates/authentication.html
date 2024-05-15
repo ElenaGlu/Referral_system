@@ -2,11 +2,12 @@
 {% block content %}
 
 <main>
-    <h3>Enter the code sent to your phone number</h3>
-    <form action="/authentication/" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="OK">
-    </form>
+    <h3>enter the code sent to your phone number</h3>
+        <form action="/authentication/" method="post">
+            {% csrf_token %}
+            {{ form }}
+    <input type="submit" value="OK">
+</form>
 </main>
+
 {% endblock %}

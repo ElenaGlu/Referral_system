@@ -16,9 +16,9 @@ class CustomErrorMiddleware:
         error_data = exception.args[0]
         if isinstance(exception, AppError):
             return JsonResponse(
-                status_code=error_data['error_type']['status_code'],
                 data={
                     'description': exception.args[0]['description'],
                     'summary': error_data['error_type']['summary'],
+                    'status_code': error_data['error_type']['status_code']
                 }
             )

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import config as c
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -8,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ap(c@(t@c@z&c8b&#+#csj#hf7g9u81rxr@mw%5ab+-3n2vu&+'
+SECRET_KEY = c.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'referral_system.middleware.middleware.CustomErrorMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -66,14 +69,13 @@ WSGI_APPLICATION = 'referral_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'referral_system',
-        'USER': 'elena',
-        'PASSWORD': '1',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': c.DATABASE_NAME,
+        'USER':  c.DATABASE_USER,
+        'PASSWORD':  c.DATABASE_PASSWORD,
+        'HOST':  c.DATABASE_HOST,
+        'PORT': c.DATABASE_PORT,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

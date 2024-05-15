@@ -1,0 +1,26 @@
+        /*base.html*/
+
+body {
+    background-color: #ffeadb;
+}
+
+.header {
+    text-align: center;
+    font-family: 'Oooh Baby', cursive;
+    color: #000000;
+    font-size: 20px;
+    background-color: #f7c5a8;
+    border-radius: 100px;
+}
+.header a {
+    font-size: 60px;
+    font-family: 'Oooh Baby', cursive;
+    color: #679b9b;
+    margin-bottom: 10px;
+}
+
+.main {
+    flex: 60%;
+    padding: 5%;
+    margin: 5%;
+}
