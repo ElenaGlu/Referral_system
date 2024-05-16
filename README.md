@@ -14,10 +14,9 @@ Python3, Django, MySQL, PythonAnywhere, Postman
 ```
 http://elenaglu99.pythonanywhere.com/
 ```
-
-![Screenshot from 2024-05-16 13-08-45](https://github.com/ElenaGlu/Referral-system/assets/123466535/464d2539-084a-40ab-b764-999d8478f57b)
-![Screenshot from![Screenshot from 2024-05-16 13-09-38](https://github.com/ElenaGlu/Referral-system/assets/123466535/10d62776-4025-4d70-8ce3-a23ed2f79033)
-![Screenshot from 2024-05-16 13-09-38](https://github.com/ElenaGlu/Referral-system/assets/123466535/4c4189ce-4b87-45f9-8ae9-88dee162a5fd)
+![Screenshot from 2024-05-16 13-08-45](https://github.com/ElenaGlu/Referral-system/assets/123466535/f08f8d73-6f28-4468-a022-0bb6ecb084e7)
+![Screenshot from 2024-05-16 13-09-38](https://github.com/ElenaGlu/Referral-system/assets/123466535/447b6f47-5a95-4677-a4fc-281206357cd4)
+![Screenshot from 2024-05-16 13-09-02](https://github.com/ElenaGlu/Referral-system/assets/123466535/35dbcebb-0bd6-4559-9041-4a9db1952353)
 
 
 ### Postman коллекция запросов:
