@@ -22,7 +22,6 @@ class UserAccount:
         access_token = self.create_jwt()
         if user:
             user.update(authentication_code=authentication_code, access_token=access_token)
-            # self.send_notification([phone_number], f'{authorization_code}')
         else:
             invite_code = self.generating_invite_code()
             UserProfile.objects.create(
@@ -31,7 +30,6 @@ class UserAccount:
                 invite_code=invite_code,
                 access_token=access_token
             )
-            # self.send_notification([phone_number], f'{authentication_code}')
         return authentication_code, access_token
 
     @staticmethod
@@ -43,9 +41,7 @@ class UserAccount:
         :raises AppError: if invalid code entered
         """
         user = UserProfile.objects.filter(access_token=access_token).first().authentication_code
-        if user == authentication_code:
-            pass
-        else:
+        if user != authentication_code:
             raise AppError(
                 {
                     'error_type': ErrorType.TOKEN_ERROR,
@@ -135,6 +131,3 @@ class UserAccount:
         :return: str containing six-digit code
         """
         return ''.join([random.choice(list('123456789!@#$%*+')) for _ in range(6)])
-
-    # @staticmethod
-    # def send_notification(phone_number: list[str], txt: str) -> None:

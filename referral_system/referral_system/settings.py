@@ -69,11 +69,11 @@ WSGI_APPLICATION = 'referral_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': c.DATABASE_NAME,
-        'USER':  c.DATABASE_USER,
-        'PASSWORD':  c.DATABASE_PASSWORD,
-        'HOST':  c.DATABASE_HOST,
-        'PORT': c.DATABASE_PORT,
+        'NAME': c.DB_NAME,
+        'USER':  c.DB_USER,
+        'PASSWORD':  c.DB_PASSWORD,
+        'HOST':  c.DB_HOST,
+        'PORT': c.DB_PORT,
     }
 }
 
