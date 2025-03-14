@@ -4,7 +4,7 @@
         <form action="/" method="post">
             {% csrf_token %}
             {{ form }}
-        <input type="submit" value="to send">
+        <input type="submit" value="to send" name="send">
         </form>
 </main>
 {% endblock %}
