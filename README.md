@@ -8,7 +8,7 @@
 
 ### Технологии:
 
-Python3, Django, MySQL, Postman, Pytest
+Python3, Django, MySQL, Postman, Pytest, Selenium
 
 ### Тестирование:
 
