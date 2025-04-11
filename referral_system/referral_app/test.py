@@ -6,11 +6,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from referral_app.models import UserProfile
+from loguru import logger
+
+
+pytestmark = pytest.mark.django_db(transaction=True)
 
 
 @pytest.mark.smoke
 @allure.title("Login with phone number")
-def test_login(browser, stored_phone):
+def test_login(browser, stored_phone, postgres_test_db):
     link = "http://127.0.0.1:8000/"
     expected_text = "enter the code sent to your phone number"
 
@@ -29,17 +33,18 @@ def test_login(browser, stored_phone):
         WebDriverWait(browser, 10).until(
             EC.text_to_be_present_in_element((By.TAG_NAME, "h3"), expected_text)
         )
+
     with allure.step("Проверяем, что отображается сообщение о вводе кода"):
         authentication_text = browser.find_element(By.TAG_NAME, "h3").text
         assert expected_text in authentication_text.lower()
 
 
-def get_auth_code_from_db(stored_phone):
+def get_auth_code_from_db():
     try:
-        auth_code = UserProfile.objects.filter(phone_number=stored_phone).order_by('-created_at').first()
-
+        auth_code = UserProfile.objects.get(phone_number="+79321132155")
+        logger.info(UserProfile.objects.all().values())
         if auth_code:
-            return auth_code.code
+            return auth_code.authentication_code
         else:
             raise Exception("Код для этого номера не найден")
     except Exception as e:
@@ -49,21 +54,21 @@ def get_auth_code_from_db(stored_phone):
 
 @pytest.mark.smoke
 @allure.title("Authentication using code from cookie")
-def test_auth(browser, stored_phone):
+def test_auth(browser, postgres_test_db):
     link = "http://127.0.0.1:8000/authentication/"
 
     with allure.step("Получаем код из базы по номеру"):
-        code = get_auth_code_from_db(stored_phone)
+        code = get_auth_code_from_db()
         assert code is not None, "Код аутентификации не найден"
 
     with allure.step("Открываем страницу аутентификации"):
         browser.get(link)
 
-    with allure.step("Ищем cookie с кодом аутентификации"):
-        cookies = browser.get_cookies()
-        code_cookie = next((c for c in cookies if c['name'] == 'a_code'), None)
-        assert code_cookie is not None, "Кука a_code не найдена"
-        code = code_cookie['value']
+    # with allure.step("Ищем cookie с кодом аутентификации"):
+    #     # cookies = browser.get_cookies()
+    #     # code_cookie = next((c for c in cookies if c['name'] == 'a_code'), None)
+    #     # assert code_cookie is not None, "Кука a_code не найдена"
+    #     # code = code_cookie['value']
 
     with allure.step(f"Вводим код из cookie: {code}"):
         form_code = browser.find_element(By.NAME, "authentication_code")

@@ -20,7 +20,8 @@ dependencies = [
     "pytest (>=8.3.5,<9.0.0)",
     "webdriver-manager (>=4.0.2,<5.0.0)",
     "allure-pytest (>=2.14.0,<3.0.0)",
-    "pytest-django (>=4.11.1,<5.0.0)"
+    "pytest-django (>=4.11.1,<5.0.0)",
+    "loguru (==0.6.0)"
 ]
 
 

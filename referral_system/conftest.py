@@ -1,7 +1,11 @@
 import random
 
 import pytest
+from loguru import logger
 from selenium import webdriver
+
+from referral_app import models
+from referral_app.models import UserProfile
 
 
 def pytest_addoption(parser):
@@ -9,7 +13,7 @@ def pytest_addoption(parser):
                      help="Choose browser: chrome or firefox")
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture()
 def browser(request):
     browser_name = request.config.getoption("browser_name")
     browser = None
@@ -28,10 +32,34 @@ def browser(request):
     browser.quit()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def stored_phone():
     while True:
         operator_code = random.randint(900, 999)
         subscriber_number = random.randint(1000000, 9999999)
         phone_number = f"+7{operator_code}{subscriber_number:07d}"
         return phone_number
+
+
+@pytest.fixture()
+def postgres_test_db():
+    user = [
+        {
+            "id": 2,
+            "phone_number": "+79321132155",
+            "authentication_code": "0467",
+            "invite_code": "8113@6",
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0NDMwMDIzOX0.iYaY3M7LP71WdcOVa591r3DginEIbk9NjZ_jv0nmVcU",
+            "used_code": "652@91",
+        },
+
+    ]
+    temporary = []
+    for obj in user:
+        temporary.append(models.UserProfile(**obj))
+
+        models.UserProfile.objects.bulk_create(temporary)
+        logger.info(UserProfile.objects.all().values())
+        return None
+
+ # temp = [models.UserProfile(**obj) for obj in user]
