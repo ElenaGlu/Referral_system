@@ -64,7 +64,7 @@ DATABASES = {
         'PASSWORD':  c.DB_PASSWORD,
         'HOST':  c.DB_HOST,
         'PORT': c.DB_PORT,
-    }
+    },
 }
 
 

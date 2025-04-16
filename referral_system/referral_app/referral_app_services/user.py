@@ -40,6 +40,8 @@ class UserAccount:
         :param authentication_code: the string contains a four-digit code
         :raises AppError: if invalid code entered
         """
+        from loguru import logger
+        logger.info(UserProfile.objects.all().values())
         user = UserProfile.objects.filter(access_token=access_token).first().authentication_code
         if user != authentication_code:
             raise AppError(

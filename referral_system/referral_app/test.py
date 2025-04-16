@@ -1,3 +1,7 @@
+from urllib.parse import urlparse
+
+from conftest import get_auth_code_from_db, get_invite_code_from_db
+
 import allure
 import pytest
 
@@ -5,110 +9,126 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from referral_app.models import UserProfile
-from loguru import logger
-
-
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = pytest.mark.django_db()
 
 
 @pytest.mark.smoke
 @allure.title("Login with phone number")
-def test_login(browser, stored_phone, postgres_test_db):
-    link = "http://127.0.0.1:8000/"
+def test_login(live_server, browser, stored_phone, postgres_test_db):
+    link = f"{live_server.url}/"
     expected_text = "enter the code sent to your phone number"
+
+    PHONE_INPUT = (By.NAME, "phone_number")
+    SEND_BUTTON = (By.NAME, "send")
+    HEADER = (By.TAG_NAME, "h3")
 
     with allure.step("Открываем страницу логина"):
         browser.get(link)
 
     with allure.step(f"Вводим номер телефона: {stored_phone}"):
-        phone_input = browser.find_element(By.NAME, "phone_number")
-        phone_input.send_keys(stored_phone)
+        WebDriverWait(browser, 5).until(
+            EC.presence_of_element_located(PHONE_INPUT)
+        ).send_keys(stored_phone)
 
     with allure.step("Нажимаем кнопку отправки"):
-        send_button = browser.find_element(By.NAME, "send")
-        send_button.click()
+        browser.find_element(*SEND_BUTTON).click()
 
-    with allure.step("Ожидаем появления текста подтверждения"):
-        WebDriverWait(browser, 10).until(
-            EC.text_to_be_present_in_element((By.TAG_NAME, "h3"), expected_text)
+    with allure.step("Ожидаем отображение заголовка подтверждения"):
+        header = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(HEADER)
         )
-
-    with allure.step("Проверяем, что отображается сообщение о вводе кода"):
-        authentication_text = browser.find_element(By.TAG_NAME, "h3").text
-        assert expected_text in authentication_text.lower()
-
-
-def get_auth_code_from_db():
-    try:
-        auth_code = UserProfile.objects.get(phone_number="+79321132155")
-        logger.info(UserProfile.objects.all().values())
-        if auth_code:
-            return auth_code.authentication_code
-        else:
-            raise Exception("Код для этого номера не найден")
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+        assert expected_text in header.text.lower()
 
 
 @pytest.mark.smoke
 @allure.title("Authentication using code from cookie")
-def test_auth(browser, postgres_test_db):
-    link = "http://127.0.0.1:8000/authentication/"
+def test_auth(live_server, browser, postgres_test_db):
+    AUTH_PAGE = f"{live_server.url}/authentication/"
+    CODE_INPUT = (By.NAME, "authentication_code")
+    SUBMIT_BUTTON = (By.NAME, "send_ok")
+    USER_TEXT = (By.CLASS_NAME, "user")
 
     with allure.step("Получаем код из базы по номеру"):
-        code = get_auth_code_from_db()
+        code, access_token, phone_number = get_auth_code_from_db()
         assert code is not None, "Код аутентификации не найден"
 
-    with allure.step("Открываем страницу аутентификации"):
-        browser.get(link)
+    with allure.step("Заходим на домен для установки куки"):
+        browser.get(live_server.url)
+        domain = urlparse(live_server.url).hostname
 
-    # with allure.step("Ищем cookie с кодом аутентификации"):
-    #     # cookies = browser.get_cookies()
-    #     # code_cookie = next((c for c in cookies if c['name'] == 'a_code'), None)
-    #     # assert code_cookie is not None, "Кука a_code не найдена"
-    #     # code = code_cookie['value']
+    with allure.step("Добавляем access_token в cookie"):
+        browser.add_cookie({
+            "name": "jwt",
+            "value": access_token,
+            "path": "/",
+            "domain": domain
+        })
+
+    with allure.step("Переходим на страницу аутентификации"):
+        browser.get(AUTH_PAGE)
 
     with allure.step(f"Вводим код из cookie: {code}"):
-        form_code = browser.find_element(By.NAME, "authentication_code")
-        form_code.send_keys(code)
+        WebDriverWait(browser, 5).until(
+            EC.presence_of_element_located(CODE_INPUT)
+        ).send_keys(code)
 
     with allure.step("Нажимаем кнопку подтверждения"):
-        button = browser.find_element(By.NAME, "send_ok")
-        button.click()
+        browser.find_element(*SUBMIT_BUTTON).click()
 
     with allure.step("Ожидаем отображение текста аккаунта"):
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "user"))
+        user_element = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(USER_TEXT)
         )
-        account_text = browser.find_element(By.CLASS_NAME, "user").text
 
     with allure.step("Проверяем, что текст аккаунта соответствует ожидаемому"):
-        assert f"User account: {stored_phone}" in account_text
+        assert f"User account: {phone_number}" in user_element.text
 
 
 @pytest.mark.smoke
 @allure.title("Add invite code to account")
-def test_account_add_invite(browser):
-    link = "http://127.0.0.1:8000/account_access/"
-    invite_code = "165187"
-    expected_text = "Your code has been activated:"
+def test_account_add_invite(live_server, browser, postgres_test_db):
+    INVITE_PAGE = f"{live_server.url}/account_access/"
+    INVITE_INPUT = (By.ID, "invite_code")
+    ADD_BUTTON = (By.NAME, "add_code")
+    RESULT_TEXT = (By.CLASS_NAME, "activate")
+    EXPECTED_TEXT = "your code has been activated:"
+
+    with allure.step("Получаем access_token и инвайт-код из БД"):
+        access_token, invite_code = get_invite_code_from_db()
+        assert access_token and invite_code, "Не удалось получить данные из БД"
+
+    with allure.step("Заходим на домен, чтобы установить куку"):
+        browser.get(live_server.url)
+        domain = urlparse(live_server.url).hostname
+
+    with allure.step("Устанавливаем JWT токен в cookie"):
+        browser.add_cookie({
+            "name": "jwt",
+            "value": access_token,
+            "path": "/",
+            "domain": domain
+        })
+
     with allure.step("Открываем страницу добавления инвайт-кода"):
-        browser.get(link)
+        browser.get(INVITE_PAGE)
 
     with allure.step(f"Вводим инвайт-код: {invite_code}"):
-        form_invite_code = browser.find_element(By.ID, "invite_code")
-        form_invite_code.send_keys(invite_code)
+        WebDriverWait(browser, 5).until(
+            EC.presence_of_element_located(INVITE_INPUT)
+        ).send_keys(invite_code)
 
     with allure.step("Нажимаем кнопку 'Добавить код'"):
-        button = browser.find_element(By.NAME, "add_code")
-        button.click()
+        WebDriverWait(browser, 5).until(
+            EC.element_to_be_clickable(ADD_BUTTON)
+        ).click()
 
     with allure.step("Ожидаем появления текста об активации"):
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "activate"))
+        result_element = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(RESULT_TEXT)
         )
 
-    account_text = browser.find_element(By.CLASS_NAME, "activate").text
-    assert expected_text in account_text.lower()
+    with allure.step("Проверяем, что код активирован"):
+        actual_text = result_element.text.lower()
+        assert EXPECTED_TEXT in actual_text, (
+            f"Ожидали текст '{EXPECTED_TEXT}', но получили: '{actual_text}'"
+        )
