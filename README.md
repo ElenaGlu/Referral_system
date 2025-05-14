@@ -17,14 +17,14 @@ Python3, Django, PostgreSQL, Postman, Pytest, Selenium, DBeaver
 
 1. Анализ требований - Изучение функционала API и формирование ключевых пользовательских сценариев.
 
-2. Тестовая документация
+2. Тестовая документация:
 - Тест-кейсы:  
   [Ссылка на Yandex disk / Excel](https://disk.yandex.ru/i/G7AxWZUMK2MwCA)
 
 - Коллекция API-запросов:  
   [Документация Postman](https://documenter.getpostman.com/view/34882852/2sB2cYbL64)
 
-- Баг-репорты:
+- Баг-репорты: 
   [Yougile-доска с дефектами](https://ru.yougile.com/board/3yswzt2l4345)
 
 #### UI-тестирование (Selenium)
