@@ -6,36 +6,6 @@ from referral_app import models
 from referral_app.models import UserProfile
 
 
-def get_auth_code_from_db():
-    try:
-        user = UserProfile.objects.get(phone_number="+79321132155")
-        if user:
-            return user.authentication_code, user.access_token, user.phone_number
-        else:
-            raise Exception("Код для этого номера не найден")
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
-
-def get_invite_code_from_db():
-    try:
-        user = UserProfile.objects.get(access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCH5")
-        if user:
-            user_invite = UserProfile.objects.get(invite_code="8113@6")
-            return user.access_token, user_invite.invite_code
-        else:
-            raise Exception("Инвайт-кода не существует")
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
-
-def pytest_addoption(parser):
-    parser.addoption('--browser_name', action='store', default="chrome",
-                     help="Choose browser: chrome or firefox")
-
-
 @pytest.fixture
 def browser(request):
     browser_name = request.config.getoption("browser_name")
@@ -87,3 +57,33 @@ def postgres_test_db():
     ]
     temp = [models.UserProfile(**obj) for obj in user]
     return models.UserProfile.objects.bulk_create(temp)
+
+
+def get_auth_code_from_db():
+    try:
+        user = UserProfile.objects.get(phone_number="+79321132155")
+        if user:
+            return user.authentication_code, user.access_token, user.phone_number
+        else:
+            raise Exception("Код для этого номера не найден")
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def get_invite_code_from_db():
+    try:
+        user = UserProfile.objects.get(access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCH5")
+        if user:
+            user_invite = UserProfile.objects.get(invite_code="8113@6")
+            return user.access_token, user_invite.invite_code
+        else:
+            raise Exception("Инвайт-кода не существует")
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def pytest_addoption(parser):
+    parser.addoption('--browser_name', action='store', default="chrome",
+                     help="Choose browser: chrome or firefox")
