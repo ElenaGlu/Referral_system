@@ -27,11 +27,10 @@ def browser(request):
 
 @pytest.fixture
 def stored_phone():
-    while True:
-        operator_code = random.randint(900, 999)
-        subscriber_number = random.randint(1000000, 9999999)
-        phone_number = f"+7{operator_code}{subscriber_number:07d}"
-        return phone_number
+    operator_code = random.randint(900, 999)
+    subscriber_number = random.randint(1000000, 9999999)
+    phone_number = f"+7{operator_code}{subscriber_number:07d}"
+    return phone_number
 
 
 @pytest.fixture
