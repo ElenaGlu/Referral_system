@@ -1,7 +1,4 @@
-import os
 import random
-import subprocess
-
 import pytest
 from selenium import webdriver
 
@@ -90,6 +87,3 @@ def postgres_test_db():
     ]
     temp = [models.UserProfile(**obj) for obj in user]
     return models.UserProfile.objects.bulk_create(temp)
-
-    # from loguru import logger
-    # logger.info(models.UserProfile.objects.all().values())
