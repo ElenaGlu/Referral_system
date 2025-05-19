@@ -11,7 +11,7 @@
 
 ### Технологии:
 
-Python3, Django, PostgreSQL, Postman, Pytest, Selenium, DBeaver
+Python3, Django, PostgreSQL, Postman, Pytest, Selenium
 
 ### Тестирование:
 
