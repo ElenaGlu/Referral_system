@@ -20,5 +20,6 @@ class CustomErrorMiddleware:
                     'description': exception.args[0]['description'],
                     'summary': error_data['error_type']['summary'],
                     'status_code': error_data['error_type']['status_code']
-                }
+                },
+                status=error_data['error_type']['status_code']
             )
