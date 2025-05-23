@@ -2,6 +2,13 @@
 {% block content %}
 
 <main>
+            {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="alert {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <form action="/account_access/" method="post">
         {% csrf_token %}
         <div class="user">

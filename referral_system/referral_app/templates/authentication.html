@@ -2,6 +2,14 @@
 {% block content %}
 
 <main>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="alert {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <h3>enter the code sent to your phone number</h3>
         <form action="/authentication/" method="post">
             {% csrf_token %}
