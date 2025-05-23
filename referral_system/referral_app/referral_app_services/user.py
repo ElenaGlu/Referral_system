@@ -4,6 +4,9 @@ from typing import Tuple
 import jwt
 import random
 
+from django.contrib import messages
+from django.shortcuts import redirect
+
 import config
 from exceptions import AppError, ErrorType
 from referral_app.models import UserProfile
@@ -40,8 +43,6 @@ class UserAccount:
         :param authentication_code: the string contains a four-digit code
         :raises AppError: if invalid code entered
         """
-        from loguru import logger
-        logger.info(UserProfile.objects.all().values())
         user = UserProfile.objects.filter(access_token=access_token).first().authentication_code
         if user != authentication_code:
             raise AppError(
@@ -121,7 +122,7 @@ class UserAccount:
     def generating_authentication_code() -> str:
         """
         Generating an authentication token.
-        :return: str containing four-digit code
+        :return: four-digit code
         """
         numbers = random.sample(range(10), 4)
         return ''.join(map(str, numbers))
@@ -130,6 +131,18 @@ class UserAccount:
     def generating_invite_code() -> str:
         """
         Generating an invitation token.
-        :return: str containing six-digit code
+        :return: six-digit code
         """
         return ''.join([random.choice(list('123456789!@#$%*+')) for _ in range(6)])
+
+    @staticmethod
+    def login_required(request) -> str:
+        """
+        Check the availability of the token.
+        :return: token
+        """
+        access_token = request.COOKIES.get("jwt")
+        if not access_token:
+            messages.warning(request, "Сессия истекла. Пожалуйста, войдите снова.")
+            return redirect('user_login')
+        return access_token
