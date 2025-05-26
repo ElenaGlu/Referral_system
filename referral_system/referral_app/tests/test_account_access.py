@@ -1,8 +1,7 @@
+from django.urls import reverse
 from urllib.parse import urlparse
 
 from conftest import get_invite_code_from_db
-
-from django.urls import reverse
 
 import allure
 import pytest
@@ -62,3 +61,24 @@ def test_account_add_invite(live_server, browser, postgres_test_db):
         assert EXPECTED_TEXT in actual_text, (
             f"Ожидали текст '{EXPECTED_TEXT}', но получили: '{actual_text}'"
         )
+
+
+@pytest.mark.django_db
+def test_account_access_without_authentication(client):
+    response = client.get(reverse('account_access'))
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('payload', [
+    {'invite_code': '12&'},
+    {'invite_code': '1234567890000'},
+    {'invite': '123456'},
+    {'invite_code': ''},
+    {},
+])
+def test_invalid_invite_code(client, payload):
+    # client.cookies['jwt'] = 'fake.jwt.token'
+    response = client.post(reverse('account_access'), data=payload, format='json')
+    assert response.status_code == 403
+
