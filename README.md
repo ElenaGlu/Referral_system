@@ -46,5 +46,6 @@ Python3, Django, PostgreSQL, Postman, Pytest, Selenium
 - Разбиение на классы эквивалентности
 - Анализ граничных значений
 
-![Screenshot from 2024-05-16 13-09-38](https://github.com/ElenaGlu/Referral-system/assets/123466535/447b6f47-5a95-4677-a4fc-281206357cd4)
+![MyCollages](https://github.com/user-attachments/assets/851541f0-c4da-4a2a-a08a-e8f231cbf8eb)
+
 
