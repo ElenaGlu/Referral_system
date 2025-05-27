@@ -1,7 +1,7 @@
 from django.urls import reverse
 from urllib.parse import urlparse
 
-from conftest import get_invite_code_from_db
+from conftest import get_invite_code_from_db, get_auth_code_from_db
 
 import allure
 import pytest
@@ -77,8 +77,9 @@ def test_account_access_without_authentication(client):
     {'invite_code': ''},
     {},
 ])
-def test_invalid_invite_code(client, payload):
-    # client.cookies['jwt'] = 'fake.jwt.token'
-    response = client.post(reverse('account_access'), data=payload, format='json')
-    assert response.status_code == 403
-
+def test_invalid_invite_code(client, payload, postgres_test_db):
+    code, access_token, phone_number = get_auth_code_from_db()
+    client.cookies['jwt'] = access_token
+    response = client.post(reverse('account_access'), data=payload)
+    assert response.status_code == 302
+    assert response.url == reverse('account_access')

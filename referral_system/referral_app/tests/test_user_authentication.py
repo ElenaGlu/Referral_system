@@ -62,14 +62,15 @@ def test_auth(live_server, browser, postgres_test_db):
 @pytest.mark.parametrize('payload', [
     {'authentication_code': '51139!'},
     {'authentication_code': '11'},
-    {'authentication_code': '12345'},
+    {'authentication_code': '1299'},
     {'authentication_code': '1@a8'},
     {'authentication': '1234'},
     {'authentication_code': ''},
     {},
 ])
-def test_user_authentication_invalid_code(client, payload):
-    # client.cookies['jwt'] = 'fake.jwt.token'
-    response = client.post(reverse('user_authentication'), data=payload, format='json')
+def test_user_authentication_invalid_code(client, payload, postgres_test_db):
+    code, access_token, phone_number = get_auth_code_from_db()
+    client.cookies['jwt'] = access_token
+    response = client.post(reverse('user_authentication'), data=payload)
     assert response.status_code == 302
     assert response.url == reverse('user_authentication')

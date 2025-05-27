@@ -43,7 +43,6 @@ def test_login(live_server, browser, stored_phone, postgres_test_db):
     {'phone_number': '9991234567'},
     {'phone_number': '+7999ABC@567'},
     {'phone_number': '+799912345678901000'},
-    # {'phone_number': '+7 999 123 45 67'},
     {'phone_number': '+44999123567'},
     {'phone': '+79321132149'},
     {'phone_number': ''},
