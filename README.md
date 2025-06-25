@@ -41,6 +41,9 @@ Python3, Django, PostgreSQL, Postman, Pytest, Selenium
 > - `authentication_code` — строка, содержащая 4 цифры (например, "2031")
 > - `invite_code` — строка, содержащая 6 элементов - цифры и символы (например, "@5935%")
 
+![ref_sys drawio](https://github.com/user-attachments/assets/cd81935b-8d5a-4b5d-b948-15e954f532f0)
+
+
 4. Использованные техники тест-дизайна:
 
 - Разбиение на классы эквивалентности
